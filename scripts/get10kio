@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#set -x
+
+firstid=${1}0000
+lastid=$(echo "$firstid+9999" | bc)
+echo from $firstid to $lastid
+
+od=v4/$1
+
+if [ -d $od ]; then
+    echo "Dir $od exists"
+    exit 1
+fi
+
+lastdir=v4/$(echo "$1-10" | bc)
+
+if [ -d $lastdir ]; then
+    rm -rf $lastdir
+fi
+
+mkdir $od
+
+for start in $(seq $firstid 1000 $lastid); do
+    ((end = start + 999))
+    fn=$od/crtsh-$start-$end.txt
+    while true; do
+        echo "Fetching from $start to $end"
+        echo "SELECT regexp_replace(encode(CERTIFICATE, 'base64'), E'\\n', '', 'g'), ID FROM certificate WHERE ID >= $start AND ID <= $end" |
+            psql -v ON_ERROR_STOP=1 \
+                --csv -t -h crt.sh -p 5432 -U guest certwatch \
+                2>/dev/null >$fn
+        if [ $? -eq 0 ]; then
+            break
+        else
+            echo "failed request, retry"
+        fi
+    done
+
+done
