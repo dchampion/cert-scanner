@@ -1,4 +1,4 @@
--- Replace start/end IDs in BETWEEN clause with variables before deploying.
+-- prefix to "WHERE ID BETWEEN $start AND $end"
 WITH no_dups AS (
     SELECT min(ID) ID,
            x509_tbscert_strip_ct_ext(CERTIFICATE) STRIPPED_CERT,
