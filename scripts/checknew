@@ -15,7 +15,7 @@ for x in $(./getmaxid -q); do
         rm $lastlog
     fi
     ./get10kio $x >log/$x-get.log
-    badkeys --crt-lines v4/$x/* >badkeyslog/badkeys-$x.log
+    badkeys --crt-lines v5/$x/* >badkeyslog/badkeys-$x.log
     echo | cat badkeyslog/badkeys-$x.log
 
 done
