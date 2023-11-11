@@ -1,4 +1,4 @@
--- Replace start/end IDs in BETWEEN clause with variables before committing.
+-- This is an example for testing that combines the contents of pre_range.sql and post_range.sql with fixed ID values.
 WITH no_dups AS (
     SELECT min(ID) ID,
            x509_tbscert_strip_ct_ext(CERTIFICATE) STRIPPED_CERT,
