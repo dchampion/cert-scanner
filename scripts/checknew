@@ -5,7 +5,7 @@
 # make sure to run only once
 pidof -o %PPID -x "$(basename -- "$0")" >/dev/null && echo "ERROR: Script $0 already running on " `TZ='America/Denver' date` && exit 1
 
-echo "$0  started on `TZ='America/Denver' date`"
+echo "$(basename -- "$0") started on `TZ='America/Denver' date`"
 
 cd $(dirname $0)
 
@@ -14,12 +14,12 @@ for x in $(./getmaxid -q); do
     if [ -f $lastlog ]; then
         rm $lastlog
     fi
-    ./get10kio $x >log/$x-get.log
+    ./get100kio $x >log/$x-get.log
     badkeys --crt-lines v5/$x/* >badkeyslog/badkeys-$x.log
     echo | cat badkeyslog/badkeys-$x.log
 
 done
 
-echo "$0 finished on `TZ='America/Denver' date`"
+echo "$(basename -- "$0") finished on `TZ='America/Denver' date`"
 
 sudo shutdown +5
