@@ -1,5 +1,5 @@
 -- suffix to "WHERE ID BETWEEN $start AND $end"
-  GROUP BY STRIPPED_CERT, SERIAL, ISSUER_CA_ID
+  GROUP BY PUBKEY
      )
     SELECT regexp_replace(encode(CERTIFICATE, 'base64'), E'\\n', '', 'g'),
            ID
