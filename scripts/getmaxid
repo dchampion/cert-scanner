@@ -6,8 +6,8 @@ maxid=$(echo "SELECT MAX(ID) FROM certificate" | psql --csv -t -h crt.sh -p 5432
 
 [ "$1" = "-q" ] || echo "MaxID $maxid"
 
-maxdir=$(echo "$maxid/100000" | bc)
-xdir=$(ls $(dirname $0)/v5/ | tail -n 1)
+maxdir=$(echo "$maxid/10000" | bc)
+xdir=$(ls $(dirname $0)/v4/ | tail -n 1)
 
 if [ "$maxdir" -eq "$xdir" ]; then
     [ "$1" = "-q" ] || echo "All ok"
