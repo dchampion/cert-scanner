@@ -6,6 +6,7 @@
 pidof -o %PPID -x "$(basename -- "$0")" >/dev/null && echo "ERROR: Script $0 already running on " `TZ='America/Denver' date` && exit 1
 
 lastdir=$(ls $(dirname $0)/v4/ | tail -n 1)
+lastdir=$(echo "$lastdir-1" | bc)
 echo "$(basename -- "$0") started with v4/$lastdir on `TZ='America/Denver' date`"
 
 cd $(dirname $0)
