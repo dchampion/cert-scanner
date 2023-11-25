@@ -5,12 +5,12 @@
 # make sure to run only once
 pidof -o %PPID -x "$(basename -- "$0")" >/dev/null && echo "ERROR: Script $0 already running on " `TZ='America/Denver' date` && exit 1
 
-firstdir=$(ls $(dirname $0)/v4/ | tail -n 1)
+cd $(dirname $0)
+
+firstdir=$(ls v4 | tail -n 1)
 firstdir=$(echo "$firstdir+1" | bc)
 lastdir=$(./getmaxid -q | tail -n 1)
 echo "$(basename -- "$0") started on `TZ='America/Denver' date` (scanning $firstdir to $lastdir)"
-
-cd $(dirname $0)
 
 for x in `seq $firstdir $lastdir`; do
     lastlog=log/$(echo "$x-10" | bc)-get.log
