@@ -9,7 +9,13 @@ cd $(dirname $0)
 
 firstdir=$(ls v4 | tail -n 1)
 firstdir=$(echo "$firstdir+1" | bc)
+
 lastdir=$(./getmaxid -q | tail -n 1)
+if [[ -z "$lastdir" ]]; then
+    echo "$(basename -- "$0") skipped on `TZ='America/Denver' date` because it found no new certs to scan"
+    exit 1
+fi
+
 echo "$(basename -- "$0") started on `TZ='America/Denver' date` (scanning $firstdir to $lastdir)"
 
 for x in `seq $firstdir $lastdir`; do
