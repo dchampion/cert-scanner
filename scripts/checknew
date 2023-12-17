@@ -11,24 +11,22 @@ firstdir=$(ls v4 | tail -n 1)
 firstdir=$(echo "$firstdir+1" | bc)
 
 lastdir=$(./getmaxid -q | tail -n 1)
-if [[ -z "$lastdir" ]]; then
+if [[ -n "$lastdir" ]]; then
+    echo "$(basename -- "$0") started on `TZ='America/Denver' date` (scanning $firstdir to $lastdir)"
+
+    for x in `seq $firstdir $lastdir`; do
+        lastlog=log/$(echo "$x-10" | bc)-get.log
+        if [ -f $lastlog ]; then
+            rm $lastlog
+        fi
+        ./get10kio $x >log/$x-get.log
+        badkeys --crt-lines v4/$x/* >badkeyslog/badkeys-$x.log
+        echo | cat badkeyslog/badkeys-$x.log
+
+    done
+    echo "$(basename -- "$0") finished on `TZ='America/Denver' date`"
+else
     echo "$(basename -- "$0") skipped on `TZ='America/Denver' date` because it found no new certs to scan"
-    exit 1
 fi
-
-echo "$(basename -- "$0") started on `TZ='America/Denver' date` (scanning $firstdir to $lastdir)"
-
-for x in `seq $firstdir $lastdir`; do
-    lastlog=log/$(echo "$x-10" | bc)-get.log
-    if [ -f $lastlog ]; then
-        rm $lastlog
-    fi
-    ./get10kio $x >log/$x-get.log
-    badkeys --crt-lines v4/$x/* >badkeyslog/badkeys-$x.log
-    echo | cat badkeyslog/badkeys-$x.log
-
-done
-
-echo "$(basename -- "$0") finished on `TZ='America/Denver' date`"
 
 sudo shutdown +5
