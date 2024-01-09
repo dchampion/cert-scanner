@@ -25,8 +25,9 @@ if [[ -n "$lastdir" ]]; then
 
     done
     echo "$(basename -- "$0") finished on `TZ='America/Denver' date`"
+    sudo shutdown +5
 else
     echo "$(basename -- "$0") skipped on `TZ='America/Denver' date` because it found no new certs to scan"
+    sudo shutdown +60
 fi
 
-sudo shutdown +5
