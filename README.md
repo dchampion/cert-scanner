@@ -1,5 +1,5 @@
 # cert-scanner
-Scans [Certificate Transparency](https://en.wikipedia.org/wiki/Certificate_Transparency) (CT) logs for CA&ndash;signed certificates containing public keys with known cryptographic vulnerabilities (via [Sectigo](https://www.sectigo.com/)'s log monitoring tool [crt.sh](https://crt.sh)).
+Scans [Certificate Transparency](https://en.wikipedia.org/wiki/Certificate_Transparency) (CT) logs for public keys with known vulnerabilities (via [Sectigo](https://www.sectigo.com/)'s log monitoring tool [crt.sh](https://crt.sh)). These keys are contained in public&ndash;key certificates signed and issued by all Certificate Authorities (CAs) that participate in the CT program.
 
 ## Summary
 
