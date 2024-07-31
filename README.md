@@ -10,7 +10,7 @@ These scripts are designed to work in concert with [a tool](https://github.com/b
 # Update as of July 31, 2024
 On August 1, 2024, this project will be shut down due to cost considerations (specifically, the one&ndash;year time period on the AWS free&ndash;tier account under which it runs will have expired).
 
-In the nearly one year this project was active, it failed to identify even a single public key containing a cryptographic vulnerabilty. During that time, nearly 400-million public key certificates were signed/issued by Certificate Authorities. Every single one of them was scanned for vulnerabilities by this project.
+In the nearly one year this project was active, it failed to identify even a single public key containing a cryptographic vulnerabilty. During that time, nearly 4-billion public key certificates were signed/issued by Certificate Authorities. Every single one of them was scanned for vulnerabilities by this project.
 
 This astonishing success rate is due likely to the CAs themselves testing publicly&ndash;submitted keys, and rejecting those that are vulnerable.
 
