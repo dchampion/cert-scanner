@@ -1,5 +1,5 @@
 # cert-scanner
-Tests cryptographic keys embedded in public&ndash;key certificates for known vulnerabilities. All certificates issued by [Certificate Authorities](https://en.wikipedia.org/wiki/Certificate_authority) (CAs) that participate in the [Certificate Transparency](https://en.wikipedia.org/wiki/Certificate_Transparency) (CT) program are tested daily against [Sectigo](https://www.sectigo.com/)'s CT log using its [crt.sh](https://crt.sh) API. The tests run daily on an EC2 instance in the AWS free tier.
+Tests cryptographic keys embedded in public&ndash;key certificates for known vulnerabilities. All certificates issued by [Certificate Authorities](https://en.wikipedia.org/wiki/Certificate_authority) (CAs) that participate in the [Certificate Transparency](https://en.wikipedia.org/wiki/Certificate_Transparency) (CT) program are tested against [Sectigo](https://www.sectigo.com/)'s CT log using its [crt.sh](https://crt.sh) API. The tests run daily on an EC2 instance in the AWS free tier.
 
 ## Summary
 
