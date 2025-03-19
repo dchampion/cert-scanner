@@ -1,0 +1,662 @@
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Tuesday, June 27, 2023 1:06 PM
+To:	hanno@hboeck.de
+Subject:	badkeys integration
+
+Hello Hanno,
+ 
+You may remember me. Back in September 2022 we traded some issue correspondence in your badkeys 
+GitHub repo--specifically pertaining to bugs in the badkeys CLI when running it on Windows, which you 
+subsequently fixed.
+ 
+Recently I noticed that Qualys' ssl server test includes a "Weak key (Debian)" yes/no line item in its 
+certificate quality report [1]. And I asked myself, if they are checking for the Debian vulnerability, why are 
+they not also checking for other key-specific vulnerabilities--namely, the 9 (including Debian) covered by 
+your badkeys implementation?
+
+This seems to me a gap for end users of that service. Moreover, given its widespread use, adding the 
+missing tests to the Qualys scan might also serve to inform the extent to which the other vulnerabilities 
+exist in the wild.
+ 
+Now then, I am wondering if a) Qualys would be open to adding the additional 8 tests to their suite and, 
+if so, b) you might be amenable to letting them leverage your code in order to do so?
+ 
+To be clear, I do not work for, or represent the interests of, Qualys in any way. I am just a retired, bored 
+software engineer/security enthusiast looking for something interesting to do. I am hoping that, if you 
+are amenable to this idea (and Qualys is too), you (and they) might let me do the integration for them.
+ 
+Thanks,
+ 
+Dave
+(dchampion)
+ 
+[1]
+ 
+From:	Hanno Bock <hanno@hboeck.de>
+Sent:	Wednesday, June 28, 2023 12:02 AM
+To:	David Champion
+Subject:	Re: badkeys integration
+
+Hi,
+
+there are a few things to say here.
+
+First of all, the code is under a permissive open source license (MIT), so everyone is of course free to 
+integrate it in other products. If Qualys wants to use badkeys in their tool, they are always free to do so.
+
+In the past I had occasionally contact with Qualys with proposals about their TLS test (e.g. when I 
+discovered the robot vulnerability, I was in contact with them to implement a test), however, that 
+contact became more difficult over time. The SSL Labs test was originally developed by Ivan Ristic, which 
+whom I had collaborated in other ways, however, he eventually left Qualys, and my impression was after 
+that development on the SSL Labs test slowed down. I currently don't have any direct contact with 
+anyone there.
+
+However, and that may be the most relevant issue here: It may not be particularly necessary to add such 
+a test, because we can just test all certificates there are. All currently valid TLS certificates are logged into 
+Certificate Transparency, so they are public. Whenever a certificate with a broken key shows up, this can 
+be reported to the CA and they must revoke it.
+
+I am actually running regular tests over certificate transparency with badkeys. However, I may actually 
+stop doing so, because nobody is paying me currently for doing it. It does not find a whole lot anyway, as 
+most of these things are tested by CAs anyway (e.g. CAs must test for the Debian weak key bug, and I 
+think they also agreed to implement a check for the fermat keys).
+
+--
+Hanno Bock
+https://hboeck.de/
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Wednesday, June 28, 2023 10:17 AM
+To:	'Hanno Bock'
+Subject:	RE: badkeys integration
+
+Thanks for the reply, Hanno.
+The bit about Certificate Transparency is very interesting. I was unaware of the program's 
+existence before now.
+
+Couple of questions:
+
+1. Despite its questionable value, and notwithstanding the fact you are doing it for free, do you 
+think the effort is worth continuing? Put another way, would anything be lost by discontinuing?
+
+2. Depending on the answer to #1, perhaps you would be open to offloading the work to a third 
+party (e.g., me, assuming it is not too onerous or time-consuming).
+Dave
+
+From:	Hanno Bock <hanno@hboeck.de>
+Sent:	Wednesday, June 28, 2023 10:46 AM
+To:	David Champion
+Subject:	Re: badkeys integration
+
+On Wed, 28 Jun 2023 10:17:09 -0600
+"David Champion" <divaconhamdip@gmail.com> wrote:
+
+> 1. Despite its questionable value, and notwithstanding the fact you 
+> are doing it for free, do you think the effort is worth continuing?
+> Put another way, would anything be lost by discontinuing?
+
+Well, there is occasionally a key detected that is vulnerable. That is either because a CA missed to 
+implement a check, or it's something that is not generally checked.
+Last time this happened was this one:
+https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/o2_vKIslDBc/m/OJPp1RKtAAAJ
+
+> 2. Depending on the answer to #1, perhaps you would be open to 
+> offloading the work to a third party (e.g., me, assuming it is not too 
+> onerous or time-consuming).
+
+Well, it's a few scripts that I could share, may need some polishing.
+Primary thing is it runs on a server that I don't really need, and am wondering if I want to continue 
+paying for it.
+
+--
+Hanno Bock
+https://hboeck.de/
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Wednesday, June 28, 2023 2:57 PM
+To:	'Hanno Bock'
+Subject:	RE: badkeys integration
+
+Puzzling that the CAs do not themselves implement these checks. It's (almost) zero cost for more robust 
+public key validation.
+
+Anyway, perhaps you could share the scripts with me so that I can get my head around your process? I 
+suppose I could secure an AWS instance (in the free tier) to run them, at least in the short term. Or some 
+other alternative I haven't yet thought of. I'd rather not pay for the privilege of running them, however :) 
+No need to add polish. 
+
+Also, I am leaving town June 30 for a couple of weeks, and then again for several weeks in August and 
+September. That said, having the scripts now can at least have me thinking about it, so that I have a head 
+start come autumn (or sooner if I can pull something together between summer trips).
+
+From:	Hanno Bock <hanno@hboeck.de>
+Sent:	Friday, July 21, 2023 1:06 PM
+To:	David Champion
+Subject:	Re: badkeys integration
+Attachments:	scripts-ct-badkeys.tar.xz
+
+Hi,
+
+On Wed, 28 Jun 2023 14:56:30 -0600
+"David Champion" <divaconhamdip@gmail.com> wrote:
+
+> Puzzling that the CAs do not themselves implement these checks. It's
+> (almost) zero cost for more robust public key validation.
+
+CAs implement most of these checks, but it's a bit inconsistent.
+
+> Anyway, perhaps you could share the scripts with me so that I can get 
+> my head around your process?
+
+I have attached the scripts.
+I have thought about sharing them publicly, but have decided against, not because I want to keep them 
+private, but because what they do is basically fetch all certs from crt.sh, and I feel uncomfortable sharing 
+a script that fetches billions of certs from them.
+
+I had personally agreed with them that it's okay that I do that. But I think if you want to implement 
+something alike, you should ask as well.
+
+
+--
+Hanno Bock
+https://hboeck.de/
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Saturday, July 22, 2023 10:30 AM
+To:	Hanno Bock
+Subject:	Re: badkeys integration
+
+Hi Hanno,
+
+Just wanted to let you know that I received and looked over your scripts, which look quite 
+straightforward. I also found some old correspondence between you and Rob Stradling (among other 
+correspondence in the Google group) which provided some useful context.
+
+Of course I would give Sectigo a heads up (and seek your permission, too) before running these scripts 
+on a regular basis. As I mentioned previously, I have a pretty busy travel season lined up between now 
+and around the end of October, and will likely not have time to do anything concrete before then.
+
+In the meantime, please feel free to share any additional information, no matter how trivial, it might be 
+worthwhile for me to know.
+
+Thanks, Hanno.
+
+Dave
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Tuesday, July 25, 2023 7:05 AM
+To:	'Hanno Bock'
+Subject:	RE: badkeys integration
+
+Hello again.
+
+Yesterday I set up an EC2 instance, and was able to run your scripts from it (don't worry...I confined the 
+test to a very small set of IDs so as not to hammer the API). So, in theory, this could work.
+
+There is still the matter of cost; i.e., will running the scripts periodically (I am not sure the period you are 
+using, but the crt IDs seem to grow at an astonishing rate) push me out of the free tier, and if so by a 
+number I can tolerate. One thought I had is to solicit funding from an interested party; EFF, for example?
+
+Then there is the matter of rate-limiting, which recent correspondence in the google group seems to 
+indicate may be a growing problem from crt's perspective. This raises a question: Have you encountered 
+any difficulty with regard to--or otherwise had general concerns about--rate limiting (see 
+https://groups.google.com/g/crtsh/c/QXQFoy331pE/m/8f3QXDqvAAAJ for context)?
+
+Thanks,
+
+Dave
+
+From:	Hanno Bock <hanno@hboeck.de>
+Sent:	Tuesday, July 25, 2023 7:19 AM
+To:	David Champion
+Subject:	Re: badkeys integration
+
+Hi,
+
+FYI I am running this daily, and yes, certs are growing at a fast rate, and it's only going to accelerate. 
+Shorter cert lifetimes are coming.
+
+> Then there is the matter of rate-limiting, which recent correspondence 
+> in the google group seems to indicate may be a growing problem from 
+> crt's perspective. This raises a question: Have you encountered any 
+> difficulty with regard to--or otherwise had general concerns 
+> about--rate limiting (see 
+> https://groups.google.com/g/crtsh/c/QXQFoy331pE/m/8f3QXDqvAAAJ for 
+> context)?
+
+It appears for the pgsql api the rate limit only applies to parallel connections. I am not parallelizing 
+anything, so I am likely unaffected.
+
+--
+Hanno Bock
+https://hboeck.de/
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Friday, August 04, 2023 10:52 AM
+To:	'Hanno Bock'
+Subject:	badkeys
+
+Hi Hanno,
+
+I've been testing your scripts--with slight modifications which I will describe below--on an AWS EC2 
+t2.micro instance in the free tier. I am at a place where I propose letting them run continuously for a 
+week or so to monitor usage; namely to see if such usage pushes me out of the free tier and, if so, by 
+how much.
+
+The modifications to the scripts are thus:
+
+1.	The script will run as a cron job every 10 minutes, 24/7 (I did not remove the is-already-running 
+test, so subsequent attempts will bail if the interval is too small to prevent collisions).
+2.	I simplified the ID math a bit--grabbing 1k certs per query, and 10k per directory, per iteration 
+of the checks.
+3.	I am only keeping the most recent 10 v4 directories, and log directory files, so as not to overflow 
+my disk (I am keeping ALL the badkeys directory logs).
+
+Assuming you are good with this proposal, and since what I have described will not technically run afoul 
+of Sectigo's current rate-limiting policy, do you still want me to reach out to give them a heads up? And 
+even more generally, assuming I can run the script in perpetuity for free, how do you feel about handing 
+this off?
+
+Dave
+
+From:	Hanno Bock <hanno@hboeck.de>
+Sent:	Monday, August 07, 2023 4:37 AM
+To:	David Champion
+Subject:	Re: badkeys
+
+On Fri, 4 Aug 2023 10:52:03 -0600
+"David Champion" <divaconhamdip@gmail.com> wrote:
+
+> Assuming you are good with this proposal, and since what I have 
+> described will not technically run afoul of Sectigo's current 
+> rate-limiting policy, do you still want me to reach out to give them a 
+> heads up? And even more generally, assuming I can run the script in 
+> perpetuity for free, how do you feel about handing this off?
+
+Hi,
+
+Up to you if you reach out to sectigo, but I'd do it. If you query their service permanently I think it's best 
+to let them know and also let them know you're doing something useful for the community.
+
+I don't think we need any official "handing off", but good to know that someone else runs this as well. I 
+might just shut down my instance at some point.
+
+--
+Hanno Bock
+https://hboeck.de/
+
+From:	crtsh@googlegroups.com on behalf of David Champion <divaconhamdip@gmail.com>
+Sent:	Monday, August 07, 2023 5:03 PM
+To:	crt.sh
+Subject:	Heads up
+
+Hello,
+
+I am new to the group, and have been collaborating with Hanno Bock (with whom you have had 
+previous correspondence in this group) for the past several weeks. Hanno developed a tool to 
+detect cryptographic vulnerabilities in public keys. Hanno tests all new certs logged to CT for 
+these vulnerabilities, which he fetches from crt.sh using your killer PSQL interface. He runs this 
+process daily, fetching only certs logged since the previous run. Occasionally, the tool identifies 
+a vulnerable key, that was nevertheless signed by a CA, whereupon Hanno notifies the CA.
+
+I have proposed taking over this task from Hanno, but wish to run it in parallel with his for an 
+indeterminate period of time. This will effectively double the traffic you see currently from 
+Hanno (note the query grabs only PEM-encoded certs and their crt.sh IDs). 
+
+I know your rate-limit policy does not technically forbid this, but I wanted to give you a heads up 
+all the same. If you have any concerns, please do not hesitate to let me know.
+
+Thanks.
+
+--  
+
+You received this message because you are subscribed to the Google Groups "crt.sh" group. 
+To unsubscribe from this group and stop receiving emails from it, send an email to 
+crtsh+unsubscribe@googlegroups.com. 
+
+To view this discussion on the web, visit https://groups.google.com/d/msgid/crtsh/51a76789-
+21f7-4490-8653-28f7399f88f0n%40googlegroups.com.
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Tuesday, August 08, 2023 8:49 PM
+To:	Hanno Bock
+Subject:	Update
+
+Hi Hanno,
+
+My daily fetch will start tomorrow at 0800 MDT, and *should* run once every 24 hours 
+thereafter. I had to do it this way to minimize VM uptime, and hence cost.
+
+I am leaving home August 10 for 18 days (back on August 26), and I will likely not be able to 
+monitor the process while I am away. So, this will be a good test.
+
+Finally, I posted a message to the google group informing them of my intentions.
+
+Take care,
+
+Dave
+
+P.S. It occurred to me a number of times while setting this up--what if a new vulnerability is 
+discovered, thereby requiring all previously tested certs to be re-tested? Yikes!
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Monday, September 11, 2023 9:30 AM
+To:	'Hanno Bock'
+Subject:	Update
+
+Hi Hanno,
+
+Just to bring you up to date, my scans have been running daily since August 9 without issue. I expect 
+them to continue in perpetuity until/unless I exceed the free-tier threshold. At that point I will assess the 
+cost and either (a) eat it, (b) solicit a subsidy from some interested 3rd party or, (c) worst case, shut it 
+down. Whatever I wind up doing, I will let you know at that time.
+
+Cheers,
+
+Dave
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Monday, November 20, 2023 2:19 PM
+To:	'Hanno Bock'
+Subject:	Hello from Colorado
+
+Hi Hanno,
+
+I spent a week or so trying to optimize your cert scan on crt.sh, only to give up when I discovered the 
+cost of doing so exceeds the benefit.
+
+The TL;DR is that there is a one-to-many relationship between public keys and certs, which results in the 
+scanning of duplicate keys. For example, in a row set containing 10k consecutive (by CRT ID) certs, ~10% 
+of the keys are duplicates. If you want the gory details, I'll be happy to share them with you (let me 
+know).
+
+However, I am writing you because, in the course of doing this exercise, I discovered one of the main 
+reasons for this duplication is the practice by some web hosting services of reusing the same public key 
+across multiple unrelated domains/certs. I assume they do this for efficiency, but I wonder if it is a good 
+practice.
+
+Were you aware of this? If so (or even if not), what are your thoughts about it?
+
+Thanks,
+
+Dave
+
+P.S. Since starting the daily scan in August, I have yet to encounter a single vulnerable key. You 
+mentioned these things turn up from time to time. Have you seen any since August? If so, then I've got a 
+problem. Just looking for a sanity check.
+
+From:	Hanno Bock <hanno@hboeck.de>
+Sent:	Tuesday, November 21, 2023 1:58 AM
+To:	David Champion
+Subject:	Re: Hello from Colorado
+
+Hi,
+
+On Mon, 20 Nov 2023 14:18:45 -0700
+"David Champion" <divaconhamdip@gmail.com> wrote:
+
+> The TL;DR is that there is a one-to-many relationship between public 
+> keys and certs, which results in the scanning of duplicate keys. For 
+> example, in a row set containing 10k consecutive (by CRT ID) certs, 
+> ~10% of the keys are duplicates. If you want the gory details, I'll be 
+> happy to share them with you (let me know).
+
+Yeah, I'm kinda aware, but thought the performance wins to try to filter out duplicates does not justify 
+the effort doing so.
+
+
+> However, I am writing you because, in the course of doing this 
+> exercise, I discovered one of the main reasons for this duplication is 
+> the practice by some web hosting services of reusing the same public 
+> key across multiple unrelated domains/certs. I assume they do this for 
+> efficiency, but I wonder if it is a good practice.
+
+Yeah, it's an issue I'm aware of.
+
+I don't think this is for efficiency. (Maybe people think it's for efficiency, but I doubt they benchmarked 
+it.) Unless you're doing something weird with your key generation, it's quite fast on any modern system. 
+A quick test for me, OpenSSL does it in 0.1 seconds. Given that you re-do your certs usually only every 
+few weeks, that's insignificant.
+Even if you have 100s or even 1000s of hosts, you can spare a minute every few weeks to regen keys.
+
+My guess would be the reasons are mixed between "people don't really know what they're doing and 
+they figured out how to create one private key and used that" and "people think key generation is slow 
+so they think they need to optimize this".
+
+Now, is it good practice? I'd say definitely not.
+
+Is it a severe security risk? Well, that really depends on who has access to these keys. If you have a 
+"classical" shared webhosting where the user can only run web applications and has no access to its own 
+private key, there's no immediate risk. But if there's like a webinterface where users can download / see 
+their own certificates and private keys, obviously that's bad. Same thing if the key is used in a VM or 
+container that the user controls. (Microsoft did something like this once.) Or if it's a cert used on a device 
+users can buy.
+
+There's a related risk if you manage to get any of these keys to sign something, even if you don't have 
+the key itself. (Imagine it's used on multiple hosts and one is vulnerable to a bleichenbacher-style RSA
+attack.) You could sign a revocation message to the CA and get the other certs invalidated.
+
+If you want to investigate further, I'd recommend trying to figure out where these keys are used and see 
+if you can become a customer and access the keys. I am almost certain you will find instances where you 
+can access the keys.
+
+I remember an old thing about shared SSH keys, just looked it up:
+https://blog.shodan.io/duplicate-ssh-keys-everywhere/
+
+I wrote an article about it back then:
+https://www.golem.de/news/verschluesselung-mehrfach-genutzte-ssh-keys-weit-verbreitet-1502-
+112444.html
+
+> P.S. Since starting the daily scan in August, I have yet to encounter 
+> a single vulnerable key. You mentioned these things turn up from time 
+> to time. Have you seen any since August? If so, then I've got a 
+> problem. Just looking for a sanity check.
+
+I am not running it any more right now.
+I'm not necessarily surprised. As I said, I only very occasionally saw vulnerable keys recently. And CAs 
+have been upping their game checking keys on their side.
+
+If you want to verify that your system works, you could try generating a vulnerable cert, and then wait till 
+it shows up. Of course you'd have to find a way to generate one that the CA does not flag :-) But e.g. I 
+think many CAs are not checking the SSH variation of the Debian OpenSSL bug.
+
+--
+Hanno Bock
+https://hboeck.de/
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Friday, November 24, 2023 11:07 AM
+To:	'Hanno Bock'
+Subject:	Hello again
+
+Hi Hanno,
+
+I spent WAY too much time trying to sneak a cert with a vulnerable key into CT. I am therefore giving up 
+on that effort. The sole point of the exercise was to make sure my daily scan was not missing vulnerable 
+certs. There are easier ways to do this, which I have since employed. Anyway, I have convinced myself I 
+will not miss any vulnerable certs.
+
+Incidentally, I discovered that at least Let's Encrypt appears to be doing the right thing--they rejected 
+every suspect CSR I threw at them. This included keys with *any* exponent besides 65537, those 
+vulnerable to Fermat factorization, and weak Debian keys (although none of the SSH variants got 
+through due to bad exponents). Anyway, my guess is LE are doing all the badkeys checks.
+
+I will now switch gears and dive deeper into to public-key reuse, which at first blush appears to be 
+rampant.
+
+Question: you mentioned in your previous email that if someone could sign (or forge a signature for) a 
+certificate revocation request, that would cause all certs using the same key to be invalidated. I would 
+have thought such requests would be cert specific, not key specific, so that only the cert associated with 
+the request would be revoked, not all certs using the same public key. Am I wrong about this? It is 
+possible I misunderstood your statement. In any case, can you please clarify?
+
+Thanks,
+
+Dave
+
+From:	Hanno Bock <hanno@hboeck.de>
+Sent:	Friday, November 24, 2023 11:19 AM
+To:	David Champion
+Subject:	Re: Hello again
+
+On Fri, 24 Nov 2023 11:07:23 -0700
+"David Champion" <divaconhamdip@gmail.com> wrote:
+
+> Question: you mentioned in your previous email that if someone could 
+> sign (or forge a signature for) a certificate revocation request, that 
+> would cause all certs using the same key to be invalidated. I would 
+> have thought such requests would be cert specific, not key specific, 
+> so that only the cert associated with the request would be revoked, 
+> not all certs using the same public key. Am I wrong about this? It is 
+> possible I misunderstood your statement. In any case, can you please 
+> clarify?
+
+No, I meant it slightly different.
+I should caution that I have not tested any of this, but I don't see how it wouldn't work. However this 
+kinda assumes an ACME compliant CA.
+
+Imagine you have a private key and you can sign whatever you want with it, but you don't have the key. 
+In the ACME protocol, if you have a private key, you can request a revocation of a certificate that is a 
+protocol message signed with that key.
+
+So if you have the ability to sign with a key, you can revoke all certs with that key with an ACME CA. But it 
+doesn't happen automatically, you have to do it for every cert.
+
+You could also try something like this: Sign a statement "This private key is broken", and send it to the 
+security contacts of a CA. There would be a human you'd have to convince to do the revocation. But you 
+could argue "I don'T want to share the private key, but I know it's compromised, I proove it by signing 
+things".
+
+
+--
+Hanno Bock
+https://hboeck.de/
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Saturday, November 25, 2023 9:10 AM
+To:	'Hanno Bock'
+Subject:	RE: Hello again
+
+Thanks for the explanation. I think I get it now (sometimes it takes a sleep or two for things to sink in :)). 
+Of course this still assumes one has the private key with which to sign things, or can forge the signature.
+
+Here is what I have since discovered/surmised:
+
+I was misled by (or I misunderstood) Matthew McPherrin's reply to my post on the crt.sh forum 
+(https://groups.google.com/g/crtsh/c/pU5Y08PSXiQ/m/g0V3X6yFBQAJ). When I wrote that I had found 
+the same key spanning multiple, disparate entities, Matthew indicated that the three domains I cited as 
+examples were all hosted by GitHub pages. This caused me to think it was GitHub (and likely other 
+hosting services) that was generating the keys, which is almost certainly not the case.
+
+Instead, I think it is much more likely these keys were generated by Let's Encrypt in some automated 
+fashion, which then issued/signed the certificates containing them for the disparate domains. So it is LE 
+that are reusing keys, not the hosting services (at least in this particular case). Feel free to punch holes in 
+this theory if you think I've got it wrong.
+
+Also, when I use certbot to request a certificate for my domain, it stores the private key on my 
+filesystem. So there's no reason to believe the private keys aren't likewise being stored on the hosting 
+services' machines; e.g., the ones that issued/renewed the certs for the aforementioned domains (and 
+of course the thousands of others they host).
+
+This would be really bad I think.
+
+From:	Hanno Bock <hanno@hboeck.de>
+Sent:	Saturday, November 25, 2023 10:52 AM
+To:	David Champion
+Subject:	Re: Hello again
+
+Hi,
+
+On Sat, 25 Nov 2023 09:10:10 -0700
+"David Champion" <divaconhamdip@gmail.com> wrote:
+
+> I was misled by (or I misunderstood) Matthew McPherrin's reply to my 
+> post on the crt.sh forum 
+> (https://groups.google.com/g/crtsh/c/pU5Y08PSXiQ/m/g0V3X6yFBQAJ).
+> When I wrote that I had found the same key spanning multiple, 
+> disparate entities, Matthew indicated that the three domains I cited 
+> as examples were all hosted by GitHub pages. This caused me to think 
+> it was GitHub (and likely other hosting services) that was generating 
+> the keys, which is almost certainly not the case.
+> 
+> Instead, I think it is much more likely these keys were generated by 
+> Let's Encrypt in some automated fashion, which then issued/signed the 
+> certificates containing them for the disparate domains. So it is LE 
+> that are reusing keys, not the hosting services (at least in this 
+> particular case). Feel free to punch holes in this theory if you think 
+> I've got it wrong.
+
+No, Matthew McPherrin is right here.
+
+Let's Encrypt never creates keys for the certificates they issue. You always create the key yourself and 
+then sign a certificate request. There were a few cases of CAs in the past that created keys for customers, 
+but it was always considered bad practice, as there is no need for a CA to know your private key, and I 
+think it was forbidden at some point (though I'm not entirely sure). But I am sure Let's Encrypt never did 
+that.
+
+That github pages uses the same key for multiple certs is an interesting observation, and I just verified it. 
+If I create a page on github pages with a custom domain, it gets a certificate with the same key as the 
+certificates you mentioned. So it appears github pages always uses the same private key. It appears the 
+key is used for so many certificates that you cannot use the crt.sh web search to search for them, as the 
+query times out.
+
+Now, this isn't directly a security problem. There's no way for you as a user to get the key for your 
+certificate. So as long as github secures its servers, there is no problem. Still, I think it's bad practice. But 
+it's not forbidden, and not directly a vulnerability.
+
+
+--
+Hanno Bock
+https://hboeck.de/
+
+From:	David Champion <divaconhamdip@gmail.com>
+Sent:	Monday, July 15, 2024 2:09 PM
+To:	'Hanno Bock'
+Subject:	Badkeys update
+
+Hello Hanno,
+
+Just wanted you to know that I plan to shut down my daily badkeys scans of crt.sh on July 31, 2024, as 
+my free tier account on AWS will expire on August 1. July 31 will mark just under one year of daily scans, 
+during which not a single certificate failed a vulnerability test.
+
+I might have considered eating the cost to continue the scans, or otherwise offloading it to some willing 
+3rd party. But, in addition to my free account expiring, crt.sh began enforcing stricter rate-limiting 
+recently, to the extent that my process can no longer keep up with the rate of certificate issuance (this 
+could be remedied with parallelization, I suppose, but cost is the real issue).
+
+The good news is that, out of nearly 400M certificates scanned, not a single one contained a vulnerable 
+key. I suspect this is due largely to the conscientiousness of CAs, as evidenced by my experiment with 
+Let's Encrypt (as you may recall, Certbot rejected the keys I submitted with any of the vulnerabilities 
+badkeys tests for). Nice to know there is at least one entity in the cybersecurity space doing the right 
+thing.
+
+Best,
+
+Dave
+
+From:	Hanno Bock <hanno@hboeck.de>
+Sent:	Saturday, July 20, 2024 1:58 AM
+To:	David Champion
+Subject:	Re: Badkeys update
+
+Hi David,
+
+Thanks for the note.
+
+I've actually recently picked up badkeys again a bit myself, and have re-enabled my scanning. I also noted 
+that it became more difficult to fetch data from crt.sh, but I got a good handle on this by improving my 
+scripts. I am now waiting a bit and retrying on a disconnect, and can resume partial downloads. Since I've 
+done that, it works again quite reliably.
+
+I also found that I had an issue in badkeys that made the whole thing unreasonably slow. I checked for 
+keys where the modulus value is a prime, which would be an invalid/broken key, but this test was almost 
+useless as this would never happen by accident, and it was very costly. Badkeys became around 10x 
+faster when I removed that.
+
+I'm currently trying to get some funding to improve badkeys via nlnet, but not sure how that'll work out, 
+as it seems they have a lot of applications right now, and the EU wants to scrap their funding.
+
+--
+Hanno Bock
+https://hboeck.de/
