@@ -16,6 +16,7 @@
         - Cancelled auto-renew domain.
     - Transfer domain to AWS route 53
         - Tried transferring `divaconhamdip.org` from squarespace to route 53. There is a 60-day waiting period to do this, presumably to discourage fraud.
+        - As of 3/20/2025, `divaconhamdip.org` was releases, and no longer appears in my squarespace account. Presumably it expired.
     - Register new domain
         - Registered `divaconhamdip.net` on route 53 ($11USD).
     - Generate bad CSR for new domain
