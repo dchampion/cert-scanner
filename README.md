@@ -24,6 +24,6 @@ I have optimized the [query](https://github.com/dchampion/cert-scanner/blob/main
 # Update as of July 31, 2024
 On August 1, 2024, this project was shut down for cost reasons (specifically, the one&ndash;year time period on the AWS free&ndash;tier account under which it ran expired).
 
-In the year during which this project was active, it failed to identify a single public key containing a cryptographic vulnerabilty. During that time, nearly 4-billion public key certificates were signed and issued by Certificate Authorities, every one of which was tested for vulnerabilities by this project.
+In the year during which this project was active, it failed to identify a single public key containing a cryptographic vulnerabilty. During that time, nearly 400 million public key certificates were signed and issued by Certificate Authorities; every one of them was tested for vulnerabilities by this project.
 
 This astonishing success rate is due likely to the CAs themselves testing publicly&ndash;submitted keys, and rejecting those that are vulnerable.
